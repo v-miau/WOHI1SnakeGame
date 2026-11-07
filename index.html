@@ -60,7 +60,16 @@
 
         const movementTick = () => {
             snake.unshift({ x: snake[0].x + direction.x, y: snake[0].y + direction.y });
-            snake.pop();
+            
+             if (!(snake[0].x == food.x && snake[0].y == food.y)) {
+                snake.pop();
+             }
+            
+             if (snake[0].x == food.x && snake[0].y == food.y) {
+                food.x = Math.floor(Math.random()*20)
+                food.y = Math.floor(Math.random()*20)
+                score++;
+             }
             drawGame();
         }
 
@@ -79,7 +88,10 @@
             };
         });
         
-        setInterval(movementTick, 200) //run the game loop
+        
+        setInterval(movementTick, 200) 
+        
+        
         
 
         // ===================================
