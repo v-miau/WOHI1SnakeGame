@@ -70,8 +70,10 @@
         );
 
         const movementTick = () => {
-            snake.unshift({ x: snake[0].x + direction.x, y: snake[0].y + direction.y });
-            
+             snake.unshift({ x: snake[0].x + direction.x, y: snake[0].y + direction.y });
+             if (snake.slice(1).some(segment => segment.x === snake[0].x && segment.y === snake[0].y)) {
+                console.log("Game Over!")
+             }           
              if (!(snake[0].x == food.x && snake[0].y == food.y)) {
                 snake.pop();
              }
