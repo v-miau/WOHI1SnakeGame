@@ -25,7 +25,6 @@
         const ctx = canvas.getContext("2d");
         const gridSize = 20;
         const tileCount = canvas.width / gridSize;
-
         // ===== INITIAL STATE =====
         let snake = [
             { x: 10, y: 10 },
@@ -35,6 +34,7 @@
         let direction = { x: 1, y: 0 };
         let food = { x: 15, y: 15 };
         let score = 0;
+        
 
         // ===== DRAWING =====
         const drawGame = () => {
@@ -58,6 +58,17 @@
             }
         };
 
+        const allSpots = [];
+            for (let x = 0; x < tileCount; x++) {
+                for (let y = 0; y < tileCount; y++) allSpots.push({ x, y });
+        }
+       
+        let availableSpots = allSpots.filter(spot =>
+            !snake.some(segment =>
+                segment.x === spot.x && segment.y === spot.y
+             )
+        );
+
         const movementTick = () => {
             snake.unshift({ x: snake[0].x + direction.x, y: snake[0].y + direction.y });
             
@@ -66,9 +77,13 @@
              }
             
              if (snake[0].x == food.x && snake[0].y == food.y) {
-                food.x = Math.floor(Math.random()*20)
-                food.y = Math.floor(Math.random()*20)
-                score++;
+                availableSpots = allSpots.filter(spot =>
+                    !snake.some(segment =>
+                        segment.x === spot.x && segment.y === spot.y
+                        )
+                 );
+                food = availableSpots[Math.floor(Math.random()*availableSpots.length)]
+                score++;     
              }
             drawGame();
         }
