@@ -5,22 +5,16 @@
     <meta name="viewport"
           content="width=device-width, initial-scale=1.0">
     <title>Snake Game</title>
-    <style>
-        canvas {
-            border: 1px solid black;
-        }
-        #info {
-            white-space: pre-line;
-        }
-    </style>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-    <h1>Snake</h1>
+    <h1 id="gameTitle">Snake</h1>
     <canvas id="gameCanvas" width="400"
             height="400"></canvas>
     <p id="info">Score: 0</p>
-
+    <button hidden id="playAgain">Play again</button>
+    
     <script>
         // ===== GAME SETUP =====
         const canvas =
@@ -74,10 +68,14 @@
              )
         );
 
+        let movementQueue = []
+
         const movementTick = () => {
             if (playing) {
+             if (movementQueue.length > 0) {
+                direction = movementQueue.shift();
+            }   
              snake.unshift({ x: snake[0].x + direction.x, y: snake[0].y + direction.y }); // New snake Head
-
              if (snake.slice(1).some(segment => segment.x === snake[0].x && segment.y === snake[0].y) || // Self collision / Wall collision
              snake[0].x < 0 || snake[0].x >= gridSize || snake[0].y < 0 || snake[0].y >= tileCount) {
                 console.log("Game Over!")
@@ -97,50 +95,69 @@
                 score++;
                 document.getElementById("info").textContent = `Score: ${score}`;
              }
+
+             let newDelay = (200 - Math.floor(score / 10) * 25);
+             clearInterval(gameTimer);
+             gameTimer = setInterval(movementTick, newDelay);
+
              if (availableSpots.length === 0) {
                 playing = false;
                 document.getElementById("info").textContent = `Score: ${score}\nYou Win!`;} 
 
              else if(playing) {drawGame();}
 
-             else {document.getElementById("info").textContent = `Score: ${score}\nGame Over!`;}
+             else {document.getElementById("info").textContent = `Score: ${score}\nGame Over!`;
+                document.getElementById("playAgain").hidden = false
+             }
             }
         }
 
-        document.addEventListener("keydown", (event) => { // Movement, don't allowed 180 degree turn
-            if (event.key === "ArrowUp" && direction.y !== 1) {
-                 direction = { x: 0, y: -1 };
+        document.addEventListener("keydown", (event) => { // Movement, don't allow 180 degree turn
+            let lastDirection = movementQueue[movementQueue.length - 1] ?? direction;
+            if (event.key === "ArrowUp" && lastDirection.y !== 1) {
+                movementQueue.push({ x: 0, y: -1 });
             };
-            if (event.key === "ArrowDown" && direction.y !== -1) {
-                direction = { x: 0, y: 1 }
+            if (event.key === "ArrowDown" && lastDirection.y !== -1) {
+                movementQueue.push({ x: 0, y: 1 });
             };
-            if ((event.key) == "ArrowRight" && direction.x !== -1 ) {
-                direction = { x: 1, y: 0 }
+            if ((event.key) == "ArrowRight" && lastDirection.x !== -1) {
+                movementQueue.push({ x: 1, y: 0 });
             };
-            if ((event.key) == "ArrowLeft" && direction.x !== 1 ) {
-                direction = { x: -1, y: 0 }
+            if ((event.key) == "ArrowLeft" && lastDirection.x !== 1) {
+                movementQueue.push({ x: -1, y: 0 });
             };
         });
         
 
-        setInterval(movementTick, 200)
-       
-
-        // ===================================
-        // BUILD THE GAME FROM HERE
-        // ===================================
-        //
-        // Use your custom agent in VS Code Chat 
-        // to guide your work through each step. 
-        // Commit regularly.
-        //
-        // Step 1: Movement (game loop)
-        // Step 2: Keyboard controls (arrow keys)
-        // Step 3: Eating and growing
-        // Step 4: Game over
-        // Step 5: Improvements
-        //
-        // ===================================
+        document.getElementById("playAgain").addEventListener("click", () => {
+            snake = [
+                { x: 10, y: 10 },
+                { x: 9, y: 10 },
+                { x: 8, y: 10 }
+            ];
+            direction = { x: 1, y: 0 };
+            food = { x: 15, y: 15 };
+            score = 0;
+            playing = true;
+            document.getElementById("info").textContent = `Score: ${score}`;
+            document.getElementById("playAgain").hidden = true
+            movementQueue[0] = { x: 1, y: 0 };
+            drawGame();
+        });
+        
+        let gameTimer = setInterval(movementTick, 200);
+        if (score == 10) {
+            gameTimer = setInterval(movementTick, 175)
+        }
+        if (score == 25) {
+            setInterval(movementTick, 150)
+        }
+        if (score == 50) {
+            setInterval(movementTick, 125)
+        }
+        if (score == 100) {
+            setInterval(movementTick, 100)
+        }
 
     </script>
 

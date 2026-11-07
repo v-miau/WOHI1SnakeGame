@@ -1,0 +1,24 @@
+#gameCanvas {
+    border: 1px solid black;
+    display: block;
+    margin: 0 auto;
+}
+
+#info {
+    white-space: pre-line;
+    text-align: center
+}
+
+#gameTitle {
+    text-align: center
+}
+
+#playAgain {
+    display: block;
+    margin: 0 auto;
+}
+
+#playAgain[hidden] {
+    display: none;
+}
+
